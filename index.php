@@ -16,15 +16,6 @@ $action = $_REQUEST['action'] ?? '';
 $role = $_SESSION['role'] ?? '';
 $barberId = $_SESSION['barberId'] ?? '';
 
-
-
-// jsonTest
-$appoitments = Appointment::getAppointmentsByBarberArray('2023-02-06', 1, 2);
-echo '<pre>';
-print_r($appoitments);
-echo '</pre>';
-
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $action == 'login') {
     $login->login();
 } elseif ($_SERVER['REQUEST_METHOD'] == 'GET' && $action == 'logout') {
