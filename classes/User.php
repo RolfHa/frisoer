@@ -67,12 +67,6 @@ class User implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        $vars = get_object_vars($this);
-        // change User-object to Array
-        if (is_object($vars)){
-            $vars = $vars->jsonSerialize();
-        }
-
-        return $vars;
+        return get_object_vars($this);
     }
 }
