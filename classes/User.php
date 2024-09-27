@@ -154,6 +154,34 @@ class User implements JsonSerializable
     /**
      * @return array
      */
+    public static function getAllUsers() : array
+    {
+        $mysqli = Db::connect();
+        $stmt = $mysqli->prepare("SELECT * FROM users");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $users = [];
+
+        while ($row = $result->fetch_assoc()) {
+
+            $users[] = new User(
+                $row['role'],
+                $row['name'],
+                $row['firstName'],
+                $row['lastName'],
+                $row['telephone'],
+                $row['password'],
+                $row['workStart'],
+                $row['workEnd'],
+                $row['id']
+            );
+        }
+        return $users;
+    }
+
+    /**
+     * @return array
+     */
     public static function getAllUsersWithoutPassword(): array
     {
         $users = self::getAllUsers();
@@ -258,20 +286,19 @@ class User implements JsonSerializable
      * @param string $firstName
      * @param string $lastName
      * @param string $telephone
-     * @param string $password
      * @param string|null $workStart
      * @param string|null $workEnd
      * @return void
      */
-    public static function updateUser(int $id, string $role, string $name, string $firstName, string $lastName, string $telephone, string $password, ?string $workStart = NULL, ?string $workEnd = NULL)
+    public static function updateUser(int $id, string $role, string $name, string $firstName, string $lastName, string $telephone, ?string $workStart = NULL, ?string $workEnd = NULL)
     {
         $mysqli = Db::connect();
         if ($role === 'customer') {
-            $stmt = $mysqli->prepare("UPDATE users SET role=?, name=?, firstName=?, lastName=?, telephone=?, password=? WHERE id=?");
-            $stmt->bind_param("ssssssi", $role, $name, $firstName, $lastName, $telephone, $password, $id);
+            $stmt = $mysqli->prepare("UPDATE users SET role=?, name=?, firstName=?, lastName=?, telephone=? WHERE id=?");
+            $stmt->bind_param("sssssi", $role, $name, $firstName, $lastName, $telephone, $id);
         } elseif ($role === 'barber' && $workStart !== '' && $workEnd !== '') {
-            $stmt = $mysqli->prepare("UPDATE users SET role=?, name=?, firstName=?, lastName=?, telephone=?, password=?, workStart=?, workEnd=? WHERE id=?");
-            $stmt->bind_param("ssssssssi", $role, $name, $firstName, $lastName, $telephone, $password, $workStart, $workEnd, $id);
+            $stmt = $mysqli->prepare("UPDATE users SET role=?, name=?, firstName=?, lastName=?, telephone=?, workStart=?, workEnd=? WHERE id=?");
+            $stmt->bind_param("sssssssi", $role, $name, $firstName, $lastName, $telephone, $workStart, $workEnd, $id);
         }
         $stmt->execute();
         if ($mysqli->affected_rows > 0) {
@@ -310,6 +337,25 @@ class User implements JsonSerializable
         } else {
             http_response_code(400);
         }
+    }
+
+    /**
+     * @param int $id
+     * @return bool|int
+     */
+    public static function deleteUser(int $id): bool|int
+    {
+        $mysqli = Db::connect();
+        $stmt = $mysqli->prepare("DELETE FROM users WHERE id=?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        if ($mysqli->affected_rows > 0) {
+            //return http_response_code(200);
+            return true;
+        } else {
+            return http_response_code(400);
+        }
+
     }
 
     /**

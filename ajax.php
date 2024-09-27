@@ -41,11 +41,15 @@ if ($action === 'load') {
     $response = Appointment::deleteAppointments($appointmentId);
     echo $response;
 } elseif ($action === 'updateUser') {
-    $response = User::updateUser($user_id, $roleToSave, $name, $firstName, $lastName, $telephone, $password, $workStart, $workEnd);
+    $response = User::updateUser($user_id, $roleToSave, $name, $firstName, $lastName, $telephone, $workStart, $workEnd);
+
 } elseif ($action === 'loadUser') {
     $response = User::getAllUsersWithoutPassword();
-    echo $response;
+    echo json_encode($response);
 } elseif ($action === 'saveUser') {
     $response = User::saveUser($roleToSave, $name, $firstName, $lastName, $telephone, $password, $workStart, $workEnd);
+    echo $response;
+} elseif ($action === 'deleteUser') {
+    $response = User::deleteUser($user_id);
     echo $response;
 }
